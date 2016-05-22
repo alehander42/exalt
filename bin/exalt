@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
+require 'exalt'
+
+def run_file(filename, env)
+  source = File.read filename
+  run_code source, env
+end
+
+def run_code(source, env)
+  Exalt.run Exalt.parse(source), env
+end
+
+def shell(en)
+  prompt = 'exalt ~ '
+  
+  eng = Exalt::Engine.new([], en)
+  while true
+    print prompt
+    line = gets("\n").chomp
+    puts eng.run_one(Exalt.parse(line))
+  end
+end
+
+def main(args)
+  env = Exalt::Env.new(Exalt::BUILTIN_ENV)
+  if args.empty?
+    shell env
+  else
+    filename = args.first
+    run_file filename, env
+  end
+end
+
+main ARGV
+
